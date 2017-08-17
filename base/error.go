@@ -1,28 +1,28 @@
 package base
 
 import (
-	"fmt"
 	"bytes"
+	"fmt"
 )
 
 type ErrorType string
 
-//爬虫错误的接口
+// 爬虫错误的接口。
 type CrawlerError interface {
-	Type() ErrorType //获得错误类型
-	Error() string //获得错误提示信息
+	Type() ErrorType // 获得错误类型。
+	Error() string   // 获得错误提示信息。
 }
 
 type myCrawlerError struct {
-	errType  ErrorType //错误类型
-	errMsg   string    //错误提示信息
-	fullErrMsg string  //完整的错误提示信息
+	errType    ErrorType //错误类型
+	errMsg     string    //错误提示信息
+	fullErrMsg string    //完整的错误提示信息
 }
 
 //错误提示常量
 const (
-	DOWNLOADER_ERROR   ErrorType = "Downloader Error"
-	ANALYZER_ERROR     ErrorType = "Analyzer Error"
+	DOWNLOADER_ERROR     ErrorType = "Downloader Error"
+	ANALYZER_ERROR       ErrorType = "Analyzer Error"
 	ITEM_PROCESSOR_ERROR ErrorType = "Item Processor Error"
 )
 
@@ -38,12 +38,12 @@ func (ce *myCrawlerError) Type() ErrorType {
 
 func (ce *myCrawlerError) Error() string {
 	if ce.fullErrMsg == "" {
-		ce.genfullErMsg()//初始化fullErrMsg
+		ce.genFullErMsg() //初始化fullErrMsg
 	}
 	return ce.fullErrMsg
 }
 
-func (ce *myCrawlerError) genfullErMsg() {
+func (ce *myCrawlerError) genFullErMsg() {
 	var buffer bytes.Buffer
 	buffer.WriteString("Crawler Error: ")
 	if ce.errType != "" {
@@ -52,10 +52,7 @@ func (ce *myCrawlerError) genfullErMsg() {
 	}
 	buffer.WriteString(ce.errMsg)
 	ce.fullErrMsg = fmt.Sprintf("%s\n", buffer.String())
-	return  //空return 无返回值
+	return //空return 无返回值
 }
 
 //
-
-
-
