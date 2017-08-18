@@ -2,7 +2,6 @@ package base
 
 import (
 	"net/http"
-	"golang.org/x/crypto/openpgp/errors"
 )
 
 type Request struct {
@@ -70,7 +69,7 @@ func (item Item) Valid() bool {
 
 //func Error() string
 
-
+//这三个Valid让我对类型内嵌的方法有了更深的理解。
 
 
 
