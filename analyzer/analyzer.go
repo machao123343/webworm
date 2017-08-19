@@ -3,9 +3,12 @@ package analyzer
 import (
 	"logging"
 	"errors"
+	"net/url"
+	"fmt"
+
 	base "webworm/base"
 	mdw "webworm/middleware"
-	"net/url"
+
 )
 
 //日志记录器
@@ -41,6 +44,30 @@ func (analyzer *myAnalyzer) Id() uint32 {//有返回时一定要声明返回的�
 	return analyzer.id
 }
 
+//添加请求值或条目值到列表
+func appendDataList(dataList []base.Data, data base.Data, respDepth uint32) []base.Data {
+	if data == nil {
+		return dataList
+	}
+	req, ok := data.(*base.Request)//类型断言语句，判断数据是否可以解析为一个有效的HTTP请求
+	if !ok {
+		return append(dataList, data)
+	}
+	newDepth := respDepth + 1
+	if req.Depth() != newDepth {
+		req = base.NewRequest(req.HttpReq(), newDepth)
+	}
+	return append(dataList, req)
+}
+
+//添加错误值到列表
+func appendErrorList(errorList []error, err error) []error {
+	if err == nil {
+		return errorList
+	}
+	return append(errorList, err)
+}
+
 func (analyzer *myAnalyzer) Analyze(
 	respParsers []ParseResponse,
 	resp base.Response) (datalist []base.Data, errorList []error) {
@@ -60,9 +87,28 @@ func (analyzer *myAnalyzer) Analyze(
 	respDepth := resp.Depth()
 
 	//解析HTTP响应
-	
+	datalist = make([]base.Data, 0)
+	errorList = make([]error, 0)
+	for i, respParser := range respParsers {
+		if respParser == nil {
+			err := errors.New(fmt.Sprintf("The document paser [%d] is invalid!", i))
+			errorList = append(errorList, err)
+			continue//执行下次循环内容
+		}
+		pDataList, pErrorList := respParser(httpResp, respDepth)
+		if pDataList != nil {
+			for _, pData := range pDataList {
+				datalist = appendDataList(datalist, pData, respDepth)
+			}
+		}
 
-
+		if pErrorList != nil {
+			for _, pError := range pErrorList {
+				errorList = appendErrorList(errorList, pError)
+			}
+		}
+	}
+	return datalist, errorList
 }
 
 

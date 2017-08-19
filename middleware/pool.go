@@ -94,8 +94,10 @@ func (pool *myPool) Return(entity Entity) error {
 	}else if casResult == 0 {
 		errMsg := fmt.Sprintf("The entity (id=%d) is alreadly in the pool!\n", entityId)
 		return errors.New(errMsg)
+	} else {
+		errMsg := fmt.Sprintf(" The entity (id=%d) is illegal!\n", entityId)
+		return errors.New(errMsg)
 	}
-
 }
 
 // 比较并设置实体ID容器中与给定实体ID对应的键值对的元素值。
