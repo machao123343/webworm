@@ -63,9 +63,9 @@ func (args *ChannelArgs) String() string {
 	return args.description
 }
 
-//获取响应通道的长度
-func (args *ChannelArgs) RespChanLen() uint {
-	return  args.reqChanLen
+// 获得请求通道的长度。
+func (args *ChannelArgs) ReqChanLen() uint {
+	return args.reqChanLen
 }
 
 //获得响应通道的长度
